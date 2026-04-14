@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Roblox Admin Dashboard</title>
+  <style>
+    body { background:#111; color:white; font-family:sans-serif; }
+    table { width:100%; border-collapse: collapse; }
+    td, th { padding:10px; border-bottom:1px solid #333; }
+    .online { color:lime; }
+    .offline { color:red; }
+  </style>
+</head>
+<body>
+
+<h1>Admin Dashboard</h1>
+<table>
+  <thead>
+    <tr>
+      <th>Game</th>
+      <th>Players</th>
+      <th>Status</th>
+      <th>Last Seen</th>
+    </tr>
+  </thead>
+  <tbody id="games"></tbody>
+</table>
+
+<script>
+async function load() {
+  const res = await fetch("/api/games");
+  const data = await res.json();
+
+  const tbody = document.getElementById("games");
+  tbody.innerHTML = "";
+
+  const now = Date.now() / 1000;
+
+  data.forEach(g => {
+    const online = (now - g.lastSeen) < 120;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${g.gameName}</td>
+      <td>${g.playerCount}</td>
+      <td class="${online ? "online" : "offline"}">
+        ${online ? "ONLINE" : "OFFLINE"}
+      </td>
+      <td>${Math.floor(now - g.lastSeen)}s ago</td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+setInterval(load, 5000);
+load();
+</script>
+
+</body>
+</html>

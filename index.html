@@ -2,26 +2,58 @@
 <html>
 <head>
   <title>Roblox Admin Dashboard</title>
+
   <style>
-    body { background:#111; color:white; font-family:sans-serif; }
-    table { width:100%; border-collapse: collapse; }
-    td, th { padding:10px; border-bottom:1px solid #333; }
-    .online { color:lime; }
-    .offline { color:red; }
+    body {
+      background: #0d0d0d;
+      color: white;
+      font-family: Arial;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #333;
+      text-align: center;
+    }
+
+    .online {
+      color: #00ff00;
+      font-weight: bold;
+    }
+
+    .offline {
+      color: #ff3c3c;
+      font-weight: bold;
+    }
   </style>
 </head>
+
 <body>
 
-<h1>Admin Dashboard</h1>
+<h1>🌐 Roblox Admin Dashboard</h1>
+
 <table>
   <thead>
     <tr>
       <th>Game</th>
+      <th>PlaceId</th>
       <th>Players</th>
       <th>Status</th>
       <th>Last Seen</th>
     </tr>
   </thead>
+
   <tbody id="games"></tbody>
 </table>
 
@@ -35,15 +67,22 @@ async function load() {
 
   const now = Date.now() / 1000;
 
+  if (data.length === 0) {
+    tbody.innerHTML = "<tr><td colspan='5'>Waiting for Roblox games...</td></tr>";
+    return;
+  }
+
   data.forEach(g => {
     const online = (now - g.lastSeen) < 120;
 
     const tr = document.createElement("tr");
+
     tr.innerHTML = `
       <td>${g.gameName}</td>
+      <td>${g.placeId}</td>
       <td>${g.playerCount}</td>
       <td class="${online ? "online" : "offline"}">
-        ${online ? "ONLINE" : "OFFLINE"}
+        ${online ? "🟢 ONLINE" : "🔴 OFFLINE"}
       </td>
       <td>${Math.floor(now - g.lastSeen)}s ago</td>
     `;
@@ -52,6 +91,7 @@ async function load() {
   });
 }
 
+// refresh auto
 setInterval(load, 5000);
 load();
 </script>
